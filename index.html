@@ -41,10 +41,10 @@
                 <div class="section-box">
                     <div class="section-header">1. Latar Belakang & Masalah</div>
                     <div class="content-text">
-                        <p>Divisi R&D PT MSMB mengembangkan <em>Trap Monitoring</em> IoT, namun menghadapi kendala pada citra <em>funnel trap</em>:</p>
+                        <p>Divisi R&D PT MSMB mengembangkan <em>Trap Monitoring</em> IoT, namun terkendala hardware masih prototipe → data real belum tersedia.:</p>
                         <ul class="custom-list">
+                            <li><strong>Urgensi: </strong> Pengembangan AI tidak bisa menunggu hardware selesai → perlu data proxy.</li>
                             <li><strong>Heavy Occlusion:</strong> Hama menumpuk, menyebabkan <em>under-segmentation</em>.</li>
-                            <li><strong>Tiny Object:</strong> Ukuran hama target sangat kecil.</li>
                         </ul>
                         
                         <div class="figure-placeholder" style="height: 200px;">
@@ -58,9 +58,9 @@
                     <div class="section-header">2. Tujuan Penelitian</div>
                     <div class="content-text box-highlight">
                         <ul class="custom-list no-margin">
-                            <li>Mengembangkan <strong>YOLOv8m+EMSConv</strong> akurat saat oklusi.</li>
-                            <li>Menghasilkan dataset proxy terkurasi.</li>
-                            <li>Menyediakan dokumen teknis untuk <em>deployment</em>.</li>
+                            <li>Mengembangkan & Mengintegrasikan <strong>YOLOv8m+EMSConv</strong> akurat saat oklusi.</li>
+                            <li>Menemukan dan mengurasi dataset yang representatif untuk kondisi lapangan.</li>
+                            <li>Menyediakan modul termodifikasi siap pakai untuk tim RnD MSMB.</li>
                         </ul>
                     </div>
                 </div>
@@ -82,7 +82,7 @@
                         <div class="text-xs mt-2 mb-2">
                             <strong>5 Kelas Target:</strong>
                             <span class="text-gray-500 italic">
-                                B. cucurbitae, B. dorsalis, S. frugiperda, P. gossypiella, B. zonata.
+                                cucurbitae, dorsalis, frugiperda, gossypiella, zonata.
                             </span>
                         </div>
                         
@@ -112,9 +112,6 @@
                             </li>
                         </ul>
 
-                        <!-- <div class="code-block" style="text-align: center; margin-top: 8px; font-weight: bold; color: #003366;">
-                            [Define Class] &rarr; [Auto-Inject] &rarr; [Load Model]
-                        </div> -->
                     </div>
                 </div>
 
@@ -124,7 +121,7 @@
                         <table class="data-table">
                             <tr><td><strong>Hardware</strong></td><td>GPU Tesla T4 (Colab)</td></tr>
                             <tr><td><strong>Epochs</strong></td><td>150 (Patience: 30)</td></tr>
-                            <tr><td><strong>Optimizer</strong></td><td>SGD (lr0=0.01)</td></tr>
+                            <tr><td><strong>Auto-orient</strong></td><td>Applied (via Roboflow)</td></tr>
                             <tr><td><strong>Augmentasi</strong></td><td>Mosaic, Flip, HSV</td></tr>
                         </table>
                     </div>
@@ -149,7 +146,7 @@
                             <ul class="custom-list">
                                 <li><strong>Split:</strong> Membagi kanal input (identitas & konvolusi) untuk efisiensi.</li>
                                 <li><strong>Transform:</strong> Kernel <strong>3x3</strong> (Lokal) & <strong>5x5</strong> (Global) paralel.</li>
-                                <li><strong>Fusion:</strong> Penggabungan fitur (1x1 Conv).</li>
+                                <li><strong>Tujuan:</strong> Meningkatkan receptive field tanpa menambah beban komputasi besar..</li>
                             </ul>
                         </div>
                     </div>
