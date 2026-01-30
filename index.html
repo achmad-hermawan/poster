@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Poster Tugas Akhir Final - Achmad Hermawan</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script> 
+</head>
+<body>
+
+    <div class="poster-container">
+        
+        <header class="header-section">
+            <div class="logo-box">
+                <img src="assets/UTDI-logo.png" class="uni-logo" alt="Logo UTDI">
+            </div>
+            
+            <div class="title-box">
+                <h1 class="header-title">
+                    Modifikasi Arsitektur YOLOv8m Berbasis <span class="highlight-gold">Efficient Multi-Scale Convolution (EMSConv)</span>
+                </h1>
+                <h2 class="header-subtitle">
+                    Untuk Meningkatkan Akurasi Deteksi Hama pada Trap Monitoring
+                </h2>
+                <div class="author-info">
+                    <strong>Penulis:</strong> Achmad Hermawan (225410040) &nbsp;|&nbsp; 
+                    <strong>Pembimbing:</strong> Febri Nova Lenti, S.Si., M.T. &nbsp;|&nbsp; 
+                    <strong>Mitra:</strong> PT Mitra Sejahtera Membangun Bangsa (MSMB)
+                </div>
+            </div>
+
+            <div class="logo-box">
+                <img src="assets/MSMB_logo.png" class="msmb-logo" alt="Logo MSMB">
+            </div>
+        </header>
+
+        <div class="main-content">
+
+            <div class="col-side">
+                
+                <div class="section-box">
+                    <div class="section-header">1. Latar Belakang & Masalah</div>
+                    <div class="content-text">
+                        <p>Divisi R&D PT MSMB mengembangkan <em>Trap Monitoring</em> IoT, namun menghadapi kendala pada citra <em>funnel trap</em>:</p>
+                        <ul class="custom-list">
+                            <li><strong>Heavy Occlusion:</strong> Hama menumpuk, menyebabkan <em>under-segmentation</em>.</li>
+                            <li><strong>Tiny Object:</strong> Ukuran hama target sangat kecil.</li>
+                        </ul>
+                        
+                        <div class="figure-placeholder" style="height: 200px;">
+                            <img src="assets/gambar_2.jpg" alt="Masalah Oklusi">
+                        </div>
+                        <div class="caption">Fig 1. Kondisi oklusi berat (tumpukan hama).</div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <div class="section-header">2. Tujuan Penelitian</div>
+                    <div class="content-text box-highlight">
+                        <ul class="custom-list no-margin">
+                            <li>Mengembangkan <strong>YOLOv8m+EMSConv</strong> akurat saat oklusi.</li>
+                            <li>Menghasilkan dataset proxy terkurasi.</li>
+                            <li>Menyediakan dokumen teknis untuk <em>deployment</em>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <div class="section-header">3. Dataset & Karakteristik</div>
+                    <div class="content-text">
+                        <table class="data-table">
+                            <tr>
+                                <th width="30%">Sumber</th>
+                                <td>Funnel Trap V1 (Roboflow)</td>
+                            </tr>
+                            <tr>
+                                <th>Total</th>
+                                <td>658 Citra (70:20:10 Split)</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="text-xs mt-2 mb-2">
+                            <strong>5 Kelas Target:</strong>
+                            <span class="text-gray-500 italic">
+                                B. cucurbitae, B. dorsalis, S. frugiperda, P. gossypiella, B. zonata.
+                            </span>
+                        </div>
+                        
+                        <div class="figure-placeholder" style="height: 200px;">
+                            <img src="assets/distribusi.jpg" alt="Distribusi Data">                        
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <div class="section-header">4. Implementasi Modular</div>
+                    <div class="content-text">
+                        <p>Modifikasi dilakukan menggunakan teknik <em>Runtime Injection</em> agar library inti Ultralytics tetap bersih (reproducible):</p>
+                        
+                        <ul class="custom-list">
+                            <li style="margin-bottom: 8px;">
+                                <strong>1. architectural_components.py</strong><br>
+                                <span style="color:#4b5563;">Berisi implementasi class PyTorch untuk layer <em>EMSConv</em> (Split-Transform-Merge) dan blok <em>C2f_EMSCP</em>.</span>
+                            </li>
+                            <li style="margin-bottom: 8px;">
+                                <strong>2. system_integrator.py</strong><br>
+                                <span style="color:#4b5563;">Script otomatis (<em>monkey-patching</em>) untuk mendaftarkan modul baru ke dalam registry YOLO saat runtime.</span>
+                            </li>
+                            <li>
+                                <strong>3. custom.yaml</strong><br>
+                                <span style="color:#4b5563;">Konfigurasi topologi jaringan yang memanggil modul kustom pada bagian Head.</span>
+                            </li>
+                        </ul>
+
+                        <!-- <div class="code-block" style="text-align: center; margin-top: 8px; font-weight: bold; color: #003366;">
+                            [Define Class] &rarr; [Auto-Inject] &rarr; [Load Model]
+                        </div> -->
+                    </div>
+                </div>
+
+                <div class="section-box flex-grow-1">
+                    <div class="section-header">5. Konfigurasi Pelatihan</div>
+                    <div class="content-text">
+                        <table class="data-table">
+                            <tr><td><strong>Hardware</strong></td><td>GPU Tesla T4 (Colab)</td></tr>
+                            <tr><td><strong>Epochs</strong></td><td>150 (Patience: 30)</td></tr>
+                            <tr><td><strong>Optimizer</strong></td><td>SGD (lr0=0.01)</td></tr>
+                            <tr><td><strong>Augmentasi</strong></td><td>Mosaic, Flip, HSV</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-main">
+                
+                <div class="section-box">
+                    <div class="section-header">6. Inovasi: EMSConv (Proposed Method)</div>
+                    <div class="content-text">
+                        <p>Modifikasi <strong>Head YOLOv8m</strong>: Blok <strong>C2f</strong> diganti menjadi <strong>C2f_EMSCP</strong> untuk memperluas <em>Receptive Field</em>.</p>
+                        
+                        <div class="figure-placeholder bg-white border-primary" style="height: 280px;">
+                            <img src="assets/arsitektur.png" alt="Diagram Arsitektur">
+                        </div>
+                        <div class="caption">Fig 2. Arsitektur YOLOv8m + EMSConv Head.</div>
+
+                        <div class="ems-details">
+                            <h4 class="sub-header">Mekanisme EMSConv:</h4>
+                            <ul class="custom-list">
+                                <li><strong>Split:</strong> Membagi kanal input (identitas & konvolusi) untuk efisiensi.</li>
+                                <li><strong>Transform:</strong> Kernel <strong>3x3</strong> (Lokal) & <strong>5x5</strong> (Global) paralel.</li>
+                                <li><strong>Fusion:</strong> Penggabungan fitur (1x1 Conv).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <div class="section-header">7. Hasil Kuantitatif</div>
+                    <div class="content-text">
+                        <table class="data-table border-thick big-text-table">
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    <th>Metrik</th>
+                                    <th>YOLOv8m</th>
+                                    <th>+EMSConv</th>
+                                    <th>Delta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white">
+                                    <td><strong>mAP@50</strong></td>
+                                    <td>97.2%</td>
+                                    <td class="text-success bold">98.3%</td>
+                                    <td class="text-success bold">+1.1%</td>
+                                </tr>
+                                <tr class="bg-light">
+                                    <td>mAP@50-95</td>
+                                    <td>71.7%</td>
+                                    <td class="bold">72.6%</td>
+                                    <td class="text-success">+0.9%</td>
+                                </tr>
+                                <tr class="bg-white">
+                                    <td>Precision</td>
+                                    <td>95.5%</td>
+                                    <td class="bold">97%</td>
+                                    <td class="text-success">+1.5%</td>
+                                </tr>
+                                <tr class="bg-light">
+                                    <td>Recall</td>
+                                    <td>96%</td>
+                                    <td class="bold">97.2%</td>
+                                    <td class="text-success">+1.2%</td>
+                                <tr class="bg-white">
+                                    <td>Parameters</td>
+                                    <td>25.8 M</td>
+                                    <td class="text-info bold">23.9 M</td>
+                                    <td class="text-info bold">-1.9 M</td>
+                                </tr class="bg-light">
+                                    <td>Waktu Training</td>
+                                    <td>0.875 jam</td>
+                                    <td class="bold">0.855 jam</td>
+                                    <td class="text-success">Sedikit Cepat</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="table-note">
+                            <em> YOLOv8m + EMSConv terbukti meningkatkan akurasi (+1.1% mAP). Model lebih ringan & sedikit lebih cepat.</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box flex-grow-1">
+                    <div class="section-header">8. Analisis Visual</div>
+                    <div class="content-text flex-col-full">
+                        
+                        <div class="figure-placeholder-visual grow-image-big">
+                            <img src="assets/final.jpg" alt="Perbandingan Visual">
+                        </div>
+
+                        <div class="visual-labels">
+                            <div class="label-left">
+                                <strong>YOLOv8m</strong><br>
+                                <span>Under-segmentation</span>
+                            </div>
+                            <div class="label-right">
+                                <strong>YOLOv8m+EMSConv</strong><br>
+                                <span>Separasi Jelas</span>
+                            </div>
+                        </div>
+                        <div class="caption">Fig 3. Model kustom mampu mendeteksi lebih banyak individu hama.</div>
+                    </div>
+                </div>
+
+                <div class="section-box no-margin-bot">
+                    <div class="section-header">9. Kesimpulan</div>
+                    <div class="content-text">
+                        <div class="conclusion-box">
+                            Integrasi EMSConv berhasil mengatasi masalah <em>occlusion</em> pada <em>Trap Monitoring</em> dengan peningkatan mAP signifikan tanpa menambah beban komputasi. Solusi ini siap diimplementasikan untuk mendukung pertanian presisi.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <footer class="footer-section">
+            Program Studi Informatika – Fakultas Teknologi Informasi – Universitas Teknologi Digital Indonesia (2026)
+        </footer>
+    </div>
+
+</body>
+</html>
